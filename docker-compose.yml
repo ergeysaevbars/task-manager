@@ -1,0 +1,53 @@
+version: '3'
+services:
+  tm-app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: task-manager-app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: task-manager
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - task-manager-network
+  tm-nginx:
+    image: nginx:alpine
+    container_name: task-manager-nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - task-manager-network
+  tm-mysql:
+    image: mysql:8.0
+    container_name: task-manager-mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: task-manager
+      MYSQL_ROOT_PASSWORD: your_mysql_root_password
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d
+    networks:
+      - task-manager-network
+networks:
+  task-manager-network:
+    driver: bridge
+volumes:
+  dbdata:
+    driver: local
