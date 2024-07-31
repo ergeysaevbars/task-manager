@@ -24,7 +24,6 @@ class UserResource extends JsonResource
             'email'             => $this->resource->email,
             'is_email_verified' => (bool)$this->resource->email_verified_at,
             'created_at'        => $this->resource->created_at->format('Y-m-d H:i:s'),
-            'updated_at'        => $this->resource->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 }
